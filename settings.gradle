@@ -1,2 +1,2 @@
-rootProject.name = "AndroidDevChallenge"
+rootProject.name = "Countdown clock"
 include ':app'
