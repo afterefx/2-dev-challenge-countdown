@@ -145,7 +145,7 @@ private fun MyClock(vm: MainViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Countdown timer") },
+                title = { Text("TickTock Flop Clock") },
                 actions = {
                     IconButton(onClick = { vm.toggleDebug() }) {
                         Icon(
