@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-
 // Start building your app here!
 @Composable
 fun MyApp(viewModel: MainViewModel = viewModel()) {
@@ -143,32 +142,36 @@ fun FinishScreen(vm: MainViewModel = viewModel()) {
 @Composable
 private fun MyClock(vm: MainViewModel = viewModel()) {
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text("Countdown timer") },
-            actions = {
-                IconButton(onClick = { vm.toggleDebug() }) {
-                    Icon(
-                        painter = rememberVectorPainter(image = Icons.Default.BugReport),
-                        contentDescription = "debug mode"
-                    )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Countdown timer") },
+                actions = {
+                    IconButton(onClick = { vm.toggleDebug() }) {
+                        Icon(
+                            painter = rememberVectorPainter(image = Icons.Default.BugReport),
+                            contentDescription = "debug mode"
+                        )
+                    }
                 }
-            }
-        )
-    }) {
+            )
+        }
+    ) {
 
         val finished by vm.finished.observeAsState(false)
         if (finished)
             FinishScreen()
         else {
             ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                val (debug,
+                val (
+                    debug,
                     buttons,
                     minT,
                     minS,
                     secT,
                     secS,
-                    sep) = createRefs()
+                    sep
+                ) = createRefs()
 
                 val timerRunning by vm.timerRunning.observeAsState(false)
                 val minutes = getTimeDisplay() / 60
@@ -185,11 +188,13 @@ private fun MyClock(vm: MainViewModel = viewModel()) {
                     val incNum by vm.incNum.observeAsState(0)
                     val num by vm.num.observeAsState(0)
                     val decNum by vm.decNum.observeAsState(0)
-                    Column(modifier = Modifier.constrainAs(debug) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }) {
+                    Column(
+                        modifier = Modifier.constrainAs(debug) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    ) {
                         Text("Initial value: $initialValue")
                         Text("Timer running: $timerRunning")
                         Text("Time remaining: $timeRemaining")
@@ -347,10 +352,12 @@ private fun ButtonControls(
         }
         Spacer(modifier = Modifier.width(20.dp))
         IconButton(onClick = { vm.resetCountdown() }) {
-            IconButton(onClick = {
-                if (timerRunning) vm.stopTimer()
-                vm.resetCountdown()
-            }) {
+            IconButton(
+                onClick = {
+                    if (timerRunning) vm.stopTimer()
+                    vm.resetCountdown()
+                }
+            ) {
                 Icon(
                     painter = rememberVectorPainter(image = Icons.Default.Close),
                     contentDescription = "Stop timer"
@@ -427,43 +434,43 @@ fun Flipper(
         val front = if (clickedUp) decNum else incNum
 
 //        if (digitChanged || timerRunning) {
-            Box(Modifier.zIndex(if (clickedUp) 2f else 0f)) {
-                //background
-                Flap(half = Half.Top, number = if (clickedUp) num else front)
+        Box(Modifier.zIndex(if (clickedUp) 2f else 0f)) {
+            // background
+            Flap(half = Half.Top, number = if (clickedUp) num else front)
 
-                // starts bottom to top animation
-                // ends top to bottom animation
-                if (rotation < -89f) {
-                    Flap(
-                        half = Half.Bottom,
-                        number = if (clickedUp) num else front,
-                        modifier = Modifier
-                            .zIndex(if (rotation < -89f) 2f else 0f)
-                            .graphicsLayer(rotationX = 180f)
-                            .graphicsLayer(
-                                rotationX = rotation,
-                                transformOrigin = TransformOrigin(.5f, -.025f)
-                            )
-                    )
-                }
-
+            // starts bottom to top animation
+            // ends top to bottom animation
+            if (rotation < -89f) {
                 Flap(
-                    half = Half.Top,
-                    number = if (clickedUp) front else num,
+                    half = Half.Bottom,
+                    number = if (clickedUp) num else front,
                     modifier = Modifier
-                        .zIndex(if (rotation < -89f) -2f else 0f)
+                        .zIndex(if (rotation < -89f) 2f else 0f)
+                        .graphicsLayer(rotationX = 180f)
                         .graphicsLayer(
                             rotationX = rotation,
-                            transformOrigin = TransformOrigin(.5f, 1.025f)
+                            transformOrigin = TransformOrigin(.5f, -.025f)
                         )
                 )
             }
-            Spacer(Modifier.height(3.dp))
+
             Flap(
-                half = Half.Bottom,
+                half = Half.Top,
                 number = if (clickedUp) front else num,
-                modifier = Modifier.zIndex(if (clickedUp.not()) -2f else 0f)
+                modifier = Modifier
+                    .zIndex(if (rotation < -89f) -2f else 0f)
+                    .graphicsLayer(
+                        rotationX = rotation,
+                        transformOrigin = TransformOrigin(.5f, 1.025f)
+                    )
             )
+        }
+        Spacer(Modifier.height(3.dp))
+        Flap(
+            half = Half.Bottom,
+            number = if (clickedUp) front else num,
+            modifier = Modifier.zIndex(if (clickedUp.not()) -2f else 0f)
+        )
 //        } else if (timerRunning.not() && digitChanged.not()) {
 //            Flap(
 //                half = Half.Top,
